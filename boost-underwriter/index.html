@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Boost Underwriter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+:root {
+  --bg: #06070a;
+  --s1: #0d0f14;
+  --s2: #131620;
+  --s3: #191d28;
+  --b1: #1c2130;
+  --b2: #242a3a;
+  --accent: #4f6fff;
+  --ag: rgba(79,111,255,0.13);
+  --gold: #f0b429;
+  --gd: rgba(240,180,41,0.12);
+  --green: #00e5a0;
+  --red: #ff4d6a;
+  --text: #dde3f5;
+  --muted: #5a6280;
+  --label: #8896b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh}
+
+/* HEADER */
+header{background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 22px;height:58px;gap:16px;position:sticky;top:0;z-index:100;overflow-x:auto}
+.wm{display:flex;align-items:baseline;gap:5px;flex-shrink:0}
+.wm-b{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;letter-spacing:1px;color:var(--accent)}
+.wm-r{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;letter-spacing:3px;color:var(--muted)}
+.cpills{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;padding:4px 0}
+.cp{font-size:9px;font-weight:700;letter-spacing:0.5px;padding:3px 7px;border-radius:100px;border:1px solid var(--b2);color:var(--muted);white-space:nowrap;flex-shrink:0}
+nav{margin-left:auto;display:flex;gap:2px;flex-shrink:0}
+.nb{background:none;border:none;color:var(--muted);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;padding:7px 13px;border-radius:6px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nb:hover{background:var(--s2);color:var(--text)}
+.nb.on{background:var(--ag);color:var(--accent);border:1px solid rgba(79,111,255,.3)}
+
+/* MAIN */
+main{max-width:1060px;margin:0 auto;padding:28px 18px 80px}
+.tab{display:none}.tab.on{display:block}
+
+/* INTAKE */
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:5px}
+.ptitle{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;letter-spacing:1px;line-height:1;margin-bottom:5px}
+.psub{color:var(--muted);font-size:13px;margin-bottom:32px}
+.fs{margin-bottom:24px}
+.fst{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid var(--b1)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:13px}
+.cfall{grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:5px}
+label{font-size:10px;font-weight:700;letter-spacing:.8px;color:var(--label);text-transform:uppercase}
+input,select,textarea{background:var(--s2);border:1px solid var(--b1);border-radius:7px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;padding:9px 12px;outline:none;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,111,255,.1)}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+select option{background:var(--s2)}
+
+.run-btn{width:100%;background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:800;letter-spacing:3px;padding:15px;cursor:pointer;transition:all .2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px}
+.run-btn:hover{background:#3d5aee;transform:translateY(-1px);box-shadow:0 8px 28px rgba(79,111,255,.35)}
+.run-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* RESULTS */
+#results{margin-top:36px}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.rb{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:20px 22px;margin-bottom:13px;animation:fu .3s ease forwards}
+.rbt{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.ico{width:24px;height:24px;background:var(--ag);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.rt{font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.rt strong,.rt b{color:var(--gold);font-weight:600}
+
+/* CONFIDENCE */
+.cfb{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:8px;font-weight:600;font-size:14px}
+.cfh{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--green)}
+.cfm{background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.25);color:var(--gold)}
+.cfl{background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.25);color:var(--red)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+.dg{background:var(--green);box-shadow:0 0 5px var(--green)}
+.dy{background:var(--gold);box-shadow:0 0 5px var(--gold)}
+.dr{background:var(--red);box-shadow:0 0 5px var(--red)}
+
+/* LOADING */
+.lw{display:flex;flex-direction:column;align-items:center;padding:70px 0;gap:16px}
+.spin{width:46px;height:46px;border:3px solid rgba(79,111,255,.15);border-top-color:var(--accent);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ll{color:var(--label);font-size:14px;text-align:center}
+.ll strong{color:var(--accent);display:block;font-size:16px;margin-bottom:3px}
+
+/* REFERENCE */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.rc{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:16px 16px 12px}
+.rct{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.rc table{width:100%;border-collapse:collapse;font-size:12px}
+.rc th{color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 5px 5px;text-align:left;border-bottom:1px solid var(--b1)}
+.rc td{padding:4px 5px;color:var(--label);border-bottom:1px solid rgba(28,33,48,.5);line-height:1.4}
+.rc td:first-child{color:var(--text);font-weight:500}
+.csl{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--gold);text-transform:uppercase;padding:4px 0 8px;margin-top:22px;margin-bottom:3px;border-bottom:1px solid var(--b1)}
+.rc.wide{grid-column:span 2}
+.tsm{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;margin:2px}
+.tr{background:rgba(255,77,106,.1);color:var(--red)}
+.ty{background:rgba(240,180,41,.1);color:var(--gold)}
+.tg{background:rgba(0,229,160,.1);color:var(--green)}
+.tb{background:rgba(79,111,255,.1);color:var(--accent)}
+
+/* HISTORY */
+.he{text-align:center;padding:80px 0;color:var(--muted)}
+.hi{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:14px 18px;margin-bottom:9px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s}
+.hi:hover{border-color:var(--accent)}
+.hav{width:40px;height:40px;background:var(--ag);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.hm{flex:1}.hm strong{font-weight:600;font-size:14px}
+.hm span{color:var(--muted);font-size:11px;display:block;margin-top:2px}
+.ht{font-size:10px;color:var(--muted);text-align:right}
+
+.cbtn{float:right;background:var(--s2);border:1px solid var(--b1);color:var(--muted);font-family:'Space Grotesk',sans-serif;font-size:11px;padding:4px 11px;border-radius:5px;cursor:pointer;transition:all .15s;margin-top:-2px}
+.cbtn:hover{border-color:var(--accent);color:var(--accent)}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+
+@media(max-width:640px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .cpills{display:none}
+  .rc.wide{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wm"><span class="wm-b">BOOST</span><span class="wm-r">UNDERWRITER</span></div>
+  <div class="cpills">
+    <span class="cp">SBLI</span><span class="cp">N. American</span><span class="cp">Mut. of Omaha</span>
+    <span class="cp">Foresters</span><span class="cp">Prudential</span><span class="cp">Ameritas</span>
+    <span class="cp">Cincinnati</span><span class="cp">Lincoln</span><span class="cp">MassMutual</span>
+    <span class="cp">Natl Life</span><span class="cp">Nationwide</span><span class="cp">Pacific Life</span>
+    <span class="cp">Principal</span><span class="cp">Securian</span><span class="cp">Transamerica</span>
+  </div>
+  <nav>
+    <button class="nb on" onclick="swTab('analyze',this)">⚡ Analyze</button>
+    <button class="nb" onclick="swTab('reference',this)">📋 Reference</button>
+    <button class="nb" onclick="swTab('history',this)">🗂 History</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ANALYZE -->
+<div id="tab-analyze" class="tab on">
+  <div class="eyebrow">15-Carrier Underwriting Intelligence</div>
+  <div class="ptitle">CASE INTAKE</div>
+  <p class="psub">Enter client details — AI cross-references all 15 carriers equally and returns ranked recommendations with zero bias.</p>
+
+  <div class="fs"><div class="fst">Demographics</div>
+    <div class="g4">
+      <div class="fld"><label>First Name</label><input id="fn" placeholder="John"></div>
+      <div class="fld"><label>Last Name</label><input id="ln" placeholder="Smith"></div>
+      <div class="fld"><label>Age</label><input id="age" type="number" placeholder="42" min="0" max="90"></div>
+      <div class="fld"><label>Gender</label><select id="gender"><option value="">Select...</option><option>Male</option><option>Female</option></select></div>
+    </div>
+  </div>
+
+  <div class="fs"><div class="fst">Build & Tobacco</div>
+    <div class="g4">
+      <div class="fld"><label>Height</label><input id="height" placeholder='5&apos;10"'></div>
+      <div class="fld"><label>Weight (lbs)</label><input id="weight" type="number" placeholder="195"></div>
+      <div class="fld cfall" style="grid-column:3/5"><label>Tobacco / Nicotine Status</label>
+        <select id="tobacco">
+          <option value="">Select...</option>
+          <option value="none_5yr">None — 5+ years</option>
+          <option value="none_3yr">None — 3–5 years</option>
+          <option value="none_2yr">None — 2–3 years</option>
+          <option value="none_1yr">None — 1–2 years</option>
+          <option value="none_recent">None — under 12 months</option>
+          <option value="current_cig">Current Cigarette / E-cig / Vape</option>
+          <option value="current_other">Current Other Tobacco</option>
+          <option value="cigar_occ">Occasional Cigar (&lt;12–24/yr)</option>
+          <option value="marijuana">Marijuana Only</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="fs"><div class="fst">Health Profile</div>
+    <div class="g2">
+      <div class="fld cfall"><label>Medical Conditions & Medications</label>
+        <textarea id="conditions" placeholder="e.g. Hypertension controlled on Lisinopril 10mg (dx 2019). Sleep apnea CPAP compliant (dx 2021). No cardiac history..."></textarea>
+      </div>
+      <div class="fld"><label>Total Cholesterol</label><input id="chol" type="number" placeholder="215"></div>
+      <div class="fld"><label>Chol / HDL Ratio</label><input id="hdl" placeholder="4.2"></div>
+      <div class="fld"><label>Blood Pressure</label><input id="bp" placeholder="128/82"></div>
+      <div class="fld"><label>A1C (if applicable)</label><input id="a1c" placeholder="6.4"></div>
+      <div class="fld"><label>Family History</label><input id="fhx" placeholder="Father — heart attack age 62"></div>
+      <div class="fld"><label>Driving History</label><input id="drv" placeholder="Clean / 1 DUI 2018 / 2 moving violations"></div>
+    </div>
+  </div>
+
+  <div class="fs"><div class="fst">Financial & Coverage</div>
+    <div class="g4">
+      <div class="fld"><label>Annual Income</label><input id="income" placeholder="$120,000"></div>
+      <div class="fld"><label>Coverage Requested</label><input id="coverage" placeholder="$500,000"></div>
+      <div class="fld"><label>Product Type</label>
+        <select id="product"><option value="">Select...</option><option>Term Life</option><option>Whole Life</option><option>IUL</option><option>Universal Life</option><option>VUL</option><option>Survivorship</option><option>Not determined</option></select>
+      </div>
+      <div class="fld"><label>Prior Declines / Ratings</label><input id="declines" placeholder="None / Declined by XYZ for..."></div>
+    </div>
+  </div>
+
+  <div class="fs"><div class="fst">Case Notes</div>
+    <div class="fld"><label>Additional Context (occupation, avocations, foreign travel, insurable interest, observations)</label>
+      <textarea id="notes" style="min-height:85px" placeholder="Include anything relevant. The more context, the sharper the analysis."></textarea>
+    </div>
+  </div>
+
+  <button class="run-btn" id="runBtn" onclick="analyze()">⚡ RUN 15-CARRIER ANALYSIS</button>
+  <div id="results"></div>
+</div>
+
+
+<!-- REFERENCE -->
+<div id="tab-reference" class="tab">
+  <div class="eyebrow">Carrier Intelligence — Source: Uploaded Guidelines</div>
+  <div class="ptitle">QUICK REFERENCE</div>
+  <p class="psub">Key underwriting criteria across all 15 carriers. For producer use only.</p>
+
+  <div class="csl">SBLI — Savings Bank Mutual Life Insurance Co. of Massachusetts</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">SBLI Risk Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>BP Max</th></tr>
+      <tr><td>Preferred Plus NT</td><td>5+ yrs</td><td>135/85 (60-)</td></tr>
+      <tr><td>Preferred NT</td><td>3+ yrs</td><td>135/85 (60-)</td></tr>
+      <tr><td>Select NT</td><td>2+ yrs</td><td>140/90 (60-)</td></tr>
+      <tr><td>Standard NT</td><td>12+ mos</td><td>Case-by-case</td></tr>
+      <tr><td>Preferred Nicotine</td><td>Current OK</td><td>135/85 (60-)</td></tr></table></div>
+    <div class="rc"><div class="rct">SBLI AcceleRate AU</div><table><tr><th>Factor</th><th>Value</th></tr>
+      <tr><td>Ages</td><td>18–50</td></tr>
+      <tr><td>Face</td><td>$100K–$1M</td></tr>
+      <tr><td>BMI eligible</td><td>Up to 38</td></tr>
+      <tr><td>Decision</td><td>Real-time</td></tr>
+      <tr><td>Healthy Credits</td><td>Up to 2-table improve</td></tr></table></div>
+  </div>
+
+  <div class="csl">NORTH AMERICAN — Company for Life and Health Insurance® (Sammons Financial)</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">North American Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>Chol Ratio</th></tr>
+      <tr><td>Super Preferred/PP</td><td>5+ yrs (cigar ≤12/yr)</td><td>≤5.0</td></tr>
+      <tr><td>Preferred NT</td><td>3+ yrs (cigar ≤24/yr)</td><td>≤6.0</td></tr>
+      <tr><td>Preferred Tobacco</td><td>Current OK</td><td>≤6.0</td></tr></table></div>
+    <div class="rc"><div class="rct">N. American Build (16–70)</div><table><tr><th>Height</th><th>Super Pref</th><th>Preferred</th><th>Standard</th></tr>
+      <tr><td>5'8"</td><td>≤187</td><td>≤200</td><td>≤255</td></tr>
+      <tr><td>5'10"</td><td>≤198</td><td>≤212</td><td>≤270</td></tr>
+      <tr><td>6'0"</td><td>≤209</td><td>≤224</td><td>≤286</td></tr></table></div>
+    <div class="rc"><div class="rct">N. American Cancer Preferred</div><table><tr><th>Type</th><th>Criteria</th></tr>
+      <tr><td>Thyroid</td><td>dx≤44, surgery, >10yr, early</td></tr>
+      <tr><td>Prostate</td><td>dx≥70, removal, >5yr, early</td></tr>
+      <tr><td>Cervix/Uterus</td><td>Surgery, >10yr, early</td></tr>
+      <tr><td>Testicle</td><td>Surgery, >10yr, early</td></tr>
+      <tr><td>Melanoma in situ</td><td>Surgery >5yr, derm favorable</td></tr></table></div>
+  </div>
+
+  <div class="csl">FORESTERS FINANCIAL — The Independent Order of Foresters</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Foresters AU Program</div><table><tr><th>Factor</th><th>Value</th></tr>
+      <tr><td>Ages</td><td>18–55</td></tr>
+      <tr><td>Face</td><td>$100K–$1M</td></tr>
+      <tr><td>Decision</td><td>≤7 days, no exam/labs</td></tr>
+      <tr><td>BP (AU)</td><td>&lt;140/90, NO medication</td></tr>
+      <tr><td>Chol (AU)</td><td>&lt;280, ratio &lt;7.0, NO meds</td></tr></table></div>
+    <div class="rc"><div class="rct">Foresters AU Knockouts</div>
+      <div style="padding-top:4px;display:flex;flex-wrap:wrap">
+        <span class="tsm tr">Alcohol/Drug Tx</span><span class="tsm tr">Cancer</span><span class="tsm tr">Diabetes</span>
+        <span class="tsm tr">Heart Disease</span><span class="tsm tr">Stroke/TIA</span><span class="tsm tr">Prior Decline/Rating</span>
+        <span class="tsm ty">HTN on Meds</span><span class="tsm ty">Chol on Meds</span><span class="tsm ty">Tobacco &lt;12mo</span>
+        <span class="tsm ty">Marijuana &lt;12mo</span><span class="tsm ty">COPD/Crohn's</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="csl">MUTUAL OF OMAHA — CI / Cancer / Heart Attack+Stroke (Living Benefits)</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">MOO Products (Living Benefits)</div><table><tr><th>Product</th><th>Notes</th></tr>
+      <tr><td>Critical Illness</td><td>Lump-sum living benefit</td></tr>
+      <tr><td>Cancer Insurance</td><td>Standalone cancer coverage</td></tr>
+      <tr><td>Heart Attack/Stroke</td><td>Standalone H/A + stroke</td></tr>
+      <tr><td>Max per condition</td><td>$100,000 all MOO policies</td></tr></table></div>
+  </div>
+
+  <div class="csl">PRUDENTIAL — The Prudential Insurance Company of America</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Prudential Elite Program</div><table><tr><th>Factor</th><th>Value</th></tr>
+      <tr><td>Ages</td><td>35–65</td></tr>
+      <tr><td>Min Face</td><td>$10,000,000</td></tr>
+      <tr><td>Max Face</td><td>$35,000,000</td></tr>
+      <tr><td>Risk</td><td>Standard or better</td></tr>
+      <tr><td>Excludes</td><td>Pro athletes, celebrities</td></tr></table></div>
+  </div>
+
+  <div class="csl">AMERITAS — Ameritas Life Insurance Corp.</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Ameritas Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>Chol Ratio</th></tr>
+      <tr><td>Preferred Plus NT</td><td>5+ yrs</td><td>≤5.0 / ≤250</td></tr>
+      <tr><td>Preferred NT</td><td>2+ yrs</td><td>≤5.5 / ≤270</td></tr>
+      <tr><td>Select NT</td><td>12+ mos</td><td>≤6.5 / ≤285</td></tr></table></div>
+    <div class="rc"><div class="rct">Ameritas Special Programs</div><table><tr><th>Program</th><th>Notes</th></tr>
+      <tr><td>TOP Offer Program</td><td>Improved offer borderline cases</td></tr>
+      <tr><td>EZ App Teleunderwriting</td><td>Simplified phone process</td></tr>
+      <tr><td>Wellness Program</td><td>Rate improvement for healthy lifestyle</td></tr>
+      <tr><td>Simplified UW</td><td>Streamlined approval path</td></tr></table></div>
+  </div>
+
+  <div class="csl">CINCINNATI LIFE — The Cincinnati Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Cincinnati Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>Chol Ratio</th></tr>
+      <tr><td>Preferred Plus</td><td>5+ yrs (cigar ≤6/yr)</td><td>≤4.5 / ≤240</td></tr>
+      <tr><td>Preferred</td><td>3+ yrs (cigar ≤6/yr)</td><td>≤5.0 / ≤250</td></tr>
+      <tr><td>Standard Plus</td><td>No cigarettes 1+ yr</td><td>≤6.0 / ≤280</td></tr>
+      <tr><td>Standard NS</td><td>Non-cigarette tobacco OK</td><td>—</td></tr></table></div>
+    <div class="rc"><div class="rct">Cincinnati BP Criteria</div><table><tr><th>Class</th><th>Age ≤60</th><th>Age 61+</th></tr>
+      <tr><td>Preferred Plus</td><td>135/85</td><td>145/85</td></tr>
+      <tr><td>Preferred</td><td>140/85</td><td>150/90</td></tr>
+      <tr><td>Standard Plus</td><td>140/90</td><td>150/90</td></tr></table></div>
+  </div>
+
+  <div class="csl">LINCOLN FINANCIAL — The Lincoln National Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Lincoln Preferred Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>BMI Max</th></tr>
+      <tr><td>Preferred Plus NT</td><td>36 mos (cigar ≤12/yr)</td><td>≤30 (age &lt;60)</td></tr>
+      <tr><td>Preferred NT</td><td>24 mos (cigar ≤24/yr)</td><td>≤32 (age &lt;60)</td></tr>
+      <tr><td>Standard NT</td><td>Rated tobacco classes available</td><td>Per chart</td></tr></table></div>
+    <div class="rc"><div class="rct">Lincoln Preferred BP / Chol</div><table><tr><th>Class</th><th>BP (age &lt;70)</th><th>Chol Ratio</th></tr>
+      <tr><td>Preferred Plus</td><td>135/85 treated</td><td>≤5.0</td></tr>
+      <tr><td>Preferred NT</td><td>140/90 treated</td><td>≤6.0</td></tr>
+      <tr><td>Preferred age 70+</td><td>155/90 treated</td><td>≤7.0</td></tr></table></div>
+    <div class="rc"><div class="rct">Lincoln Preferred Diabetes</div>
+      <p style="font-size:12px;color:var(--label);line-height:1.6;padding-top:4px">Age 70+, Type 2, duration ≤3yr, oral meds or diet-controlled, A1C avg ≤6.4 (12mo), negative urinalysis, no retinopathy/neuropathy, BP well-controlled, favorable cardiac workup, good lipids → <strong>Preferred NT eligible</strong></p>
+    </div>
+  </div>
+
+  <div class="csl">MASSMUTUAL — Massachusetts Mutual Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">MassMutual Classes</div><table><tr><th>Class</th><th>Points Needed</th></tr>
+      <tr><td>Ultra Preferred</td><td>10 points</td></tr>
+      <tr><td>Select Preferred NT</td><td>8 points</td></tr>
+      <tr><td>Select Preferred Tobacco</td><td>7 points</td></tr></table></div>
+    <div class="rc"><div class="rct">MassMutual Point System</div><table><tr><th>Category</th><th>Points</th></tr>
+      <tr><td>No avocation rating</td><td>+1</td></tr>
+      <tr><td>No BP/lipid treatment</td><td>+1</td></tr>
+      <tr><td>EBCT results (5yr)</td><td>+2</td></tr>
+      <tr><td>No CV family hx (parents &lt;60)</td><td>+1</td></tr>
+      <tr><td>Normal labs</td><td>+1</td></tr>
+      <tr><td>No nicotine 2+ years</td><td>+1</td></tr>
+      <tr><td>Age ≥60: NTproBNP, EKG</td><td>+2</td></tr>
+      <tr><td>BP/BMI/Chol criteria</td><td>Up to +8</td></tr></table></div>
+  </div>
+
+  <div class="csl">NATIONAL LIFE GROUP — National Life Insurance Company / LSW</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">NLG Programs</div><table><tr><th>Program</th><th>Notes</th></tr>
+      <tr><td>EZ Underwriting (AU)</td><td>Accelerated UW process</td></tr>
+      <tr><td>Full Medical/Financial</td><td>Traditional full underwriting</td></tr>
+      <tr><td>Elite / Preferred / Select</td><td>Risk class tiers (Term + Permanent)</td></tr>
+      <tr><td>Large Case Team</td><td>$5M+ or $50K CTP premium</td></tr>
+      <tr><td>Trial/Informal Apps</td><td>Available for complex cases</td></tr></table></div>
+  </div>
+
+  <div class="csl">NATIONWIDE — Nationwide Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Nationwide Classes (Ages 18–70)</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>Chol Ratio</th></tr>
+      <tr><td>Preferred Plus NT</td><td>5+ yrs</td><td>&lt;5.0 / &lt;230</td></tr>
+      <tr><td>Preferred NT</td><td>24+ mos</td><td>&lt;5.5 / &lt;250 (&lt;60)</td></tr>
+      <tr><td>Tobacco Preferred</td><td>Within 12 mos</td><td>&lt;5.5 / &lt;250</td></tr>
+      <tr><td>Standard Plus NT</td><td>12+ mos</td><td>&lt;6.5 / &lt;300</td></tr></table></div>
+    <div class="rc"><div class="rct">Nationwide BP Criteria</div><table><tr><th>Class</th><th>Age &lt;55</th><th>Age 55+</th></tr>
+      <tr><td>Preferred Plus</td><td>140/80 NO tx</td><td>140/90 NO tx</td></tr>
+      <tr><td>Preferred NT</td><td>≤145/90</td><td>≤150/90</td></tr>
+      <tr><td>Standard Plus</td><td>≤145/90</td><td>≤150/90</td></tr></table></div>
+    <div class="rc"><div class="rct">Nationwide Income Multiples</div><table><tr><th>Age</th><th>Multiple</th></tr>
+      <tr><td>18–30</td><td>30x</td></tr><tr><td>31–40</td><td>25x</td></tr><tr><td>41–50</td><td>20x</td></tr>
+      <tr><td>51–60</td><td>15x</td></tr><tr><td>61–70</td><td>10x</td></tr><tr><td>71+</td><td>5x</td></tr></table></div>
+  </div>
+
+  <div class="csl">PACIFIC LIFE — Pacific Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Pacific Life PAL+ Program</div><table><tr><th>Pathway</th><th>Eligibility</th></tr>
+      <tr><td>Accelerated (no exam)</td><td>Ages 18–60, ≤$3M, Standard+</td></tr>
+      <tr><td>Modified (APS/labs)</td><td>Ages 18–70, ≤$75M</td></tr>
+      <tr><td>Traditional</td><td>All ages, all amounts</td></tr></table></div>
+    <div class="rc"><div class="rct">Pacific Life Best Class Criteria</div><table><tr><th>Factor</th><th>Best / 2nd / 3rd</th></tr>
+      <tr><td>BP</td><td>135/85 / 140/90 / 160/90</td></tr>
+      <tr><td>Nicotine-free</td><td>5+ / 3+ / 2+ years</td></tr>
+      <tr><td>BMI</td><td>18.5-30 / 18.5-33 / 18.5-35</td></tr>
+      <tr><td>Chol/HDL Ratio</td><td>≤5.5 / ≤5.5 / ≤6.0</td></tr>
+      <tr><td>Chol max</td><td>300</td></tr></table></div>
+    <div class="rc"><div class="rct">Pacific Healthy Rewards</div>
+      <p style="font-size:12px;color:var(--label);line-height:1.6;padding-top:4px">Holistic underwriting credits applied to modified or traditional pathways. Considers prevention/screening, mental, emotional, social, and fitness factors to improve risk class decisions.</p>
+    </div>
+  </div>
+
+  <div class="csl">PRINCIPAL — Principal National Life Insurance Company / Principal Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Principal Accelerated UW</div><table><tr><th>Factor</th><th>Value</th></tr>
+      <tr><td>Ages</td><td>18–60</td></tr>
+      <tr><td>Face</td><td>$50K–$1M</td></tr>
+      <tr><td>No exam/labs</td><td>45–55% of qualifying applicants</td></tr>
+      <tr><td>BP cutoff</td><td>&lt;155/92 (18-44) / &lt;160/92 (45-60)</td></tr>
+      <tr><td>Chol cutoff</td><td>&lt;275</td></tr>
+      <tr><td>Marijuana</td><td>No use past 5 years</td></tr></table></div>
+    <div class="rc"><div class="rct">Principal AU Disqualifiers</div>
+      <div style="padding-top:4px;display:flex;flex-wrap:wrap">
+        <span class="tsm tr">Alcohol/Drug Tx</span><span class="tsm tr">A-Fib</span><span class="tsm tr">Cancer (non-basal/sq)</span>
+        <span class="tsm tr">COPD</span><span class="tsm tr">Diabetes</span><span class="tsm tr">Heart Disease</span>
+        <span class="tsm tr">MS</span><span class="tsm tr">Stroke/TIA</span><span class="tsm tr">Sleep Apnea</span>
+        <span class="tsm ty">Bipolar</span><span class="tsm ty">Barrett's</span><span class="tsm ty">Gastric Bypass</span>
+        <span class="tsm ty">Epilepsy</span><span class="tsm ty">Lupus/SLE</span><span class="tsm ty">Hepatitis</span>
+        <span class="tsm ty">RA</span><span class="tsm ty">PAD/PVD</span><span class="tsm ty">Melanoma</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="csl">SECURIAN FINANCIAL — Minnesota Life / Securian Life</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Securian Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>Chol/Ratio</th></tr>
+      <tr><td>Preferred Select</td><td>36 mos (cigar ≤12/yr)</td><td>≤250 / ≤4.5</td></tr>
+      <tr><td>Preferred</td><td>12 mos (cigar ≤24/yr)</td><td>&lt;270 / &lt;6.0 (&lt;50)</td></tr>
+      <tr><td>Non-Tobacco Plus</td><td>12 mos</td><td>≤300 / ≤7.0</td></tr></table></div>
+    <div class="rc"><div class="rct">Securian Stretch Exceptions</div>
+      <p style="font-size:12px;color:var(--label);line-height:1.6;padding-top:4px">Mortality Credits Program: Build stretch (meet all other criteria except build → issue at class if build meets next-lower class limit). Driving history exceptions (DUI timing slightly relaxed). Cholesterol preferred exceptions available.</p>
+    </div>
+  </div>
+
+  <div class="csl">TRANSAMERICA — Transamerica Life Insurance Company</div>
+  <div class="ref-grid">
+    <div class="rc"><div class="rct">Transamerica Classes</div><table><tr><th>Class</th><th>Nicotine-Free</th><th>BP (age ≤70)</th></tr>
+      <tr><td>Preferred Plus (PP/Elite)</td><td>5+ yrs (cigar ≤1/mo)</td><td>135/85</td></tr>
+      <tr><td>Preferred NS</td><td>2+ yrs (cigar ≤1/mo)</td><td>145/85</td></tr>
+      <tr><td>Standard Plus NS</td><td>2+ yrs</td><td>148/88</td></tr>
+      <tr><td>Standard NS</td><td>1+ yr</td><td>N/A (nonmed)</td></tr>
+      <tr><td>Preferred Smoker</td><td>Current tobacco OK</td><td>145/85</td></tr></table></div>
+    <div class="rc"><div class="rct">Transamerica Cholesterol</div><table><tr><th>Class</th><th>Max Chol</th><th>Ratio (≤70)</th></tr>
+      <tr><td>Preferred Plus</td><td>230</td><td>≤5.0</td></tr>
+      <tr><td>Preferred NS</td><td>260</td><td>≤5.5</td></tr>
+      <tr><td>Standard Plus</td><td>300</td><td>≤6.2</td></tr>
+      <tr><td>Preferred Tobacco</td><td>260</td><td>≤5.5</td></tr></table></div>
+    <div class="rc"><div class="rct">Transamerica Products</div><table><tr><th>Product</th><th>Classes</th></tr>
+      <tr><td>Trendsetter Super (term)</td><td>PP → Standard Smoker</td></tr>
+      <tr><td>Trendsetter LB (term)</td><td>PP → Standard Smoker</td></tr>
+      <tr><td>FFIUL II / FFIUL (IUL)</td><td>Preferred Elite → Preferred Tobacco</td></tr>
+      <tr><td>Max substandard</td><td>Table H (200%)</td></tr></table></div>
+  </div>
+
+</div>
+
+
+<!-- HISTORY -->
+<div id="tab-history" class="tab">
+  <div class="eyebrow">Session Log</div>
+  <div class="ptitle">CASE HISTORY</div>
+  <p class="psub">Cases analyzed this session. Click any to reload.</p>
+  <div id="histList"><div class="he"><div style="font-size:48px;margin-bottom:14px">🗂</div><div style="font-size:15px;font-weight:600;margin-bottom:7px">No cases yet</div><div style="font-size:13px">Run your first analysis to see it here.</div></div></div>
+</div>
+
+</main>
+
+<script>
+// ─── SYSTEM PROMPT ───────────────────────────────────────────────────────────
+const SYS = `You are The Boost Underwriter — a multi-carrier life insurance underwriting strategist. Analyze every case against ALL 15 carriers below with ZERO bias. Every recommendation must be justified by specific guideline criteria from the documents. Never favor any carrier. Never invent guidelines.
+
+CARRIERS:
+1. SBLI (Savings Bank Mutual Life Insurance Co. of Massachusetts)
+2. North American Company for Life and Health Insurance® (Sammons Financial)
+3. Mutual of Omaha (Critical Illness / Cancer / Heart Attack+Stroke — LIVING BENEFITS ONLY)
+4. Foresters Financial (The Independent Order of Foresters)
+5. Prudential (Prudential Insurance Company of America — primarily $10M+ cases via Elite Program)
+6. Ameritas Life Insurance Corp.
+7. Cincinnati Life Insurance Company
+8. Lincoln Financial (The Lincoln National Life Insurance Company)
+9. MassMutual (Massachusetts Mutual Life Insurance Company)
+10. National Life Group (National Life Insurance Company / LSW)
+11. Nationwide Life Insurance Company
+12. Pacific Life Insurance Company
+13. Principal (Principal National Life / Principal Life Insurance Company)
+14. Securian Financial (Minnesota Life / Securian Life Insurance Company)
+15. Transamerica Life Insurance Company
+
+═══════════════════════════════════════════════
+SBLI GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes: Preferred Plus NT (nicotine-free 5+yr, BMI≤28, Chol 120-300, Ratio ≤5.0M/≤4.5F, BP ≤135/85 age<60 /≤140/85 age 61+, no CV/diabetes/cancer, no drugs/alcohol ever, family no CV/cancer dx<60 in parent or sibling) | Preferred NT (nicotine-free 3+yr, BMI≤30, Ratio ≤5.5M/≤5.0F, BP ≤135/85/<140/90) | Select NT (nicotine-free 2+yr, BMI≤32.5, Ratio ≤6.5M/≤6.0F, BP ≤140/90) | Standard NT (nicotine-free 12+mo) | Preferred Nicotine (current tobacco OK, BMI≤29.5, BP ≤135/85) | Standard Nicotine.
+AcceleRate: Ages 18-50, $100K-$1M, real-time, BMI up to 38. Acceptable: controlled HTN, depression (dx>1yr,1 med), hypothyroidism, sleep apnea (mild,CPAP,dx>1yr), anxiety (1 med), marijuana <11x/mo, ADHD.
+Lab triggers: A-fib, Bipolar, Cancer, CVA/TIA, Diabetes, Drug abuse, COPD, Hep B/C, Kidney disease.
+Healthy Credits: Up to 2-table improvement, max Table 5, 3 of 4 criteria at Pref+/Pref level (Build, BP, Chol, Family Hx) + annual wellness exam last 24mo. Excludes: any CV history, DM complications, substance abuse, rated driving/avocation/aviation, cancer, severe psychiatric.
+DECLINES: AIDS/HIV, ALS, Alzheimer's, Cancer <2yr, Cirrhosis, CHF, COPD severe, Defibrillator, Organ transplant, Pul HTN, Renal failure severe, Stroke <1yr, Suicide attempt <5yr, Substance abuse <5yr, DM with cardiac/renal comorbidities, Bankruptcy <2yr, Liens >$50K.
+
+═══════════════════════════════════════════════
+NORTH AMERICAN GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes (Ages ≤70): Super Preferred/PP (nicotine-free 5+yr, cigar ≤12/yr, no alcohol/drug 10yr, no CV/DM/cancer, BP ≤135/85, Ratio ≤5.0, Chol ≤300, family no CV/cancer in parent or sibling before 60, no DWI/DUI last 5yr, max 2 moving violations/3yr) | Preferred NT (nicotine-free 3+yr, cigar ≤24/yr, no alcohol/drug 7yr, BP ≤140/90, Ratio ≤6.0, family no CV/cancer in parent before 60) | Preferred Tobacco (current tobacco OK, BP ≤140/90, Ratio ≤6.0).
+Build Chart (ages 16-70, all genders) Super Preferred Max / Preferred Max / Standard Max: 4'10":137/146/185 | 5'0":146/156/198 | 5'2":156/167/212 | 5'4":166/177/226 | 5'6":176/189/240 | 5'7":181/194/248 | 5'8":187/200/255 | 5'9":192/206/263 | 5'10":198/212/270 | 5'11":203/218/278 | 6'0":209/224/286 | 6'1":215/230/294 | 6'2":221/236/302 | 6'4":233/249/319.
+Ages 71+: BP ≤140/85 (PP) / ≤150/90 (Preferred), Chol Ratio ≤5.5 (PP) / ≤6.5 (Preferred), No cognitive impairment, independent ADLs/IADLs.
+Preferred Cancer: Thyroid (dx≤44, surgery, >10yr, early), Prostate (dx≥70, removal, >5yr), Cervix/Uterus/Testicle (surgery, >10yr), Melanoma in situ (surgery >5yr, favorable derm).
+Max table rating: ages 18-70 = Table 8/H; 71-75 = Table 6/F; 76-79 = Table 4/D.
+
+═══════════════════════════════════════════════
+FORESTERS FINANCIAL GUIDELINES
+═══════════════════════════════════════════════
+AU Program: Ages 18-55, Face $100K-$1M, Standard through Preferred Plus NT, 7-day decision, no exam/labs/tele-med. BP <140/90 NO medication. Chol total <280, Ratio <7.0 NO medication. US citizen or green card only (no standalone visa). No prior rated/declined applications any carrier. No premium financing/life settlement/LLC.
+AU Build: 4'8":74-162 | 5'0":85-186 | 5'6":103-226 | 5'8":109-240 | 5'10":115-254 | 6'0":122-269 | 6'2":129-284.
+AU Knockouts (still eligible for traditional): Alcohol/drug treatment, Anemia, Rheumatoid Arthritis, Cardiac, Cancer, COPD, Crohn's, Criminal, Diabetes, Foreign travel >12wk/yr outside US/Canada, Hazardous occupation/disability/unemployment, Heart Disease, DUI/bankruptcy, HTN on meds, Chol on meds, Kidney/Liver disease, Marijuana <12mo, Parkinson's, Stroke/TIA, Tobacco <12mo.
+
+═══════════════════════════════════════════════
+MUTUAL OF OMAHA — LIVING BENEFITS ONLY
+═══════════════════════════════════════════════
+IMPORTANT: Mutual of Omaha in this guide provides Critical Illness, Cancer, Heart Attack/Stroke insurance — NOT traditional life death benefit. Recommend when client needs living benefit protection alongside or in addition to life coverage.
+Max coverage per condition: $100,000 across all MOO policies. Products: Critical Illness, Cancer Insurance, Heart Attack/Stroke Insurance, Critical Advantage Portfolio (combination).
+
+═══════════════════════════════════════════════
+PRUDENTIAL GUIDELINES
+═══════════════════════════════════════════════
+IMPORTANT: Elite Program primarily for $10M-$35M cases. Standard traditional UW available for all amounts.
+Elite Program: Ages 35-65 only, Face $10M-$35M, Standard risk or better, US residents, total Pru limit $35M. EXCLUDES athletes/celebrities. Requires: Comprehensive annual physical within 12 months (HT/WT/BP/pulse), CBC, Basic Metabolic Panel+HbA1C, Lipid screening, Urinalysis, EKG/cardiac testing within 24mo (12mo if age 60+). No exceptions. Non-invasive: MIB, MVR, Data Verification, Pharma DB.
+Standard Program: Available all products and amounts through normal underwriting.
+
+═══════════════════════════════════════════════
+AMERITAS GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes: Preferred Plus NT (nicotine-free 5+yr, cigar ≤2/mo, no alcohol/drug 10yr, BP ≤135/85, Chol ≤250/Ratio ≤5.0, family up to 1 event, no hazardous sports 5yr, marijuana ≤4x/mo) | Preferred NT (nicotine-free 2+yr, no alcohol/drug 10yr, BP ≤140/85 age<60/≤150/90 age 61+, Chol ≤270/Ratio ≤5.5, private pilots OK: >500 solo hrs, ≤200/yr, marijuana ≤8x/mo) | Select NT (nicotine-free 12+mo, no alcohol/drug 8yr, BP ≤150/90, Chol ≤285/Ratio ≤6.5, private pilots OK: >350 solo hrs, marijuana ≤12x/mo).
+Special Programs: TOP Offer Program (improved offer borderline substandard), EZ App Teleunderwriting, Wellness Program, Simplified UW, External Term Conversion.
+Retention ages 0-65: PP/Pref/Select/Std = $5M; Jumbo limit 0-80 = $65M.
+
+═══════════════════════════════════════════════
+CINCINNATI LIFE GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes (6 classes): Preferred Plus (nicotine-free 5+yr, cigar ≤6/yr, no CV/cancer, no family CV/cancer death <60, BP ≤135/85 age≤60/≤145/85 age 61+, Chol ≤240/Ratio ≤4.5, US resident 3+yr, no hazardous avocations, scuba ≤75ft) | Preferred (nicotine-free 3+yr, cigar ≤6/yr, no CV/cancer, ≤1 parent death <60, BP ≤140/85 age≤60/≤150/90 age 61+, Chol ≤250/Ratio ≤5.0, US resident 1+yr) | Standard Plus (nicotine-free 1+yr, some tobacco users, BP ≤140/90/≤150/90, Chol ≤280/Ratio ≤6.0) | Standard NS | Preferred Smoker ($100K+ min, meets Preferred criteria but smoked within past year) | Standard Smoker.
+Gender-specific build chart: Males and females have separate weight limits per class (provided in full detail per guidelines).
+Financial Multiples: Age 20-30=30x; 31-40=25x; 41-50=20x; 51-60=15x; 61-65=10x; 66+=5x.
+Foreign nationals: US resident 2+yr, US SSN, not a politically exposed person, not a journalist/public figure/military foreign.
+
+═══════════════════════════════════════════════
+LINCOLN FINANCIAL GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes: Preferred Plus NT (nicotine-free 36 mos, cigar ≤12/yr, no CV/DM/cancer, no alcohol/drug 10yr, family no parent or sibling death <65 from CAD/MI/CVA, no DUI last 5yr, BP ≤135/85 (treated), Ratio ≤5.0, Chol ≤300, BMI ≤30 age<60/≤31 age 61+, no private aviation, no ratable avocations) | Preferred NT (nicotine-free 24 mos, cigar ≤24/yr, no DM except special criteria at age 70+, no DUI last 5yr, BP ≤140/90 (treated) age<70/≤155/90 age70+, Ratio ≤6.0 age<70/≤7.0 age70+, BMI ≤32 age<60/≤33 age 61+, private aviation OK if IFR or 1000 total hours, 25-250 hrs/yr, US/Canada, age<70, clean MVR).
+Special: Preferred NT eligible for Type 2 diabetes at age 70+ if: duration ≤3yr, oral/diet-controlled, A1C avg ≤6.4 (12mo), negative UA, no retinopathy/neuropathy, BP well-controlled, favorable cardiac workup, good lipids.
+Max rating: COVID update: Table 8 for ages ≤70; Table 6 for ages 71-80; ages 81-85 postponed.
+
+═══════════════════════════════════════════════
+MASSMUTUAL GUIDELINES
+═══════════════════════════════════════════════
+Risk Classes: Ultra Preferred (10 pts), Select Preferred NT (8 pts), Select Preferred Tobacco (7 pts).
+Points System (max 17): No avocation rating (+1), No BP/lipid treatment (+1), EBCT favorable results past 5yr (+2), No CV family hx parents before 60 (+1), Normal labs (+1), Nicotine-free 2+yr (+1), Age≥60 NTproBNP+EKG (+2), BP (gender-specific, ≤136/86 male or ≤136/78 female = +1, stricter = +2), BMI (male 18-30=+1, 18-25=+2; female 17-28=+1, 17-23=+2), Chol/HDL ratio (male ≤4.9=+2, ≤3.4=+2; female ≤4.5=+2, ≤3.0=+2).
+Tobacco: Cigars ≤24/yr with negative urine = non-tobacco consideration. No nicotine product use in last year = non-tobacco.
+Algorithmic Underwriting: MassMutual Mortality Score (M3S) used for eligible ages/amounts. Replaces preferred points.
+
+═══════════════════════════════════════════════
+NATIONAL LIFE GROUP GUIDELINES
+═══════════════════════════════════════════════
+Products: SummitLife/Advanced Markets IUL, PeakLife IUL, FlexLife, BasicSecure, TotalSecure (WL variants), SurvivorLife SIUL, Term LSW and Term NL Life.
+Underwriting Programs: Full Medical/Financial UW, EZ Underwriting (Accelerated), various product-specific UW.
+Risk Classes: Elite, Preferred, Select (separate criteria for Accelerated vs Fully Underwritten, Term vs Permanent).
+Financial UW: Standard guidelines apply; juvenile coverage up to $500K considered; cover letter required for complex cases.
+Large Case: $5M+ or $50K CTP premium → separate large case team.
+Trial/Informal: Available. NLG willing to consider informal applications on complex cases.
+No final expense/burial coverage offered.
+
+═══════════════════════════════════════════════
+NATIONWIDE GUIDELINES
+═══════════════════════════════════════════════
+Intelligent Underwriting: Digital-first process; online or telephone health interview; accelerated decision for healthiest clients.
+Risk Classes (Ages 18-70): Preferred Plus NT (nicotine-free 5+yr, BP <140/80 age<55 / <140/90 age 55+, NO BP treatment, Chol/Ratio <230/<5.0 OR <240/<4.5 OR <250/<4.0, no DUI 5yr, no family CV/cancer death <60 in parent or sibling, no CV/DM/stroke/cancer except basal cell, no felony) | Preferred NT (nicotine-free 24+mo, BP ≤145/90 age<55/≤150/90 age 55+, treated BP OK if well-controlled 1yr, Chol ≤250/Ratio ≤5.5 age<60 / ≤280/≤6.0 age 61-70, no DUI 5yr, family ≤1 CV/cancer death <60) | Standard Plus NT (nicotine-free 12+mo, cancer history OK if tx >10yr ago, no chemo/radiation) | Tobacco Preferred (nicotine within 12 mos).
+Executive Advantage program: For high-net-worth cases.
+Income multiples: 18-30=30x; 31-40=25x; 41-50=20x; 51-60=15x; 61-70=10x; 71+=5x.
+
+═══════════════════════════════════════════════
+PACIFIC LIFE GUIDELINES
+═══════════════════════════════════════════════
+PAL+ Program (3 pathways): Accelerated (no exam, ages 18-60, ≤$3M, standard+, auto-considered first) → Modified (APS/labs/physical within 12mo, ages 18-70, ≤$75M non-PL-Promise, all classes) → Traditional (all ages, all amounts, all classes).
+Risk Classes (aligned names): Super Preferred NT, Preferred NT, Standard Plus NT, Standard NT, Preferred Tobacco, Standard Tobacco.
+Best Class Criteria: BP 135/85 / 2nd: 140/90 / 3rd: up to 160/90 (age>50). Nicotine-free: 5+yr / 3+yr / 2+yr. BMI: 18.5-30 / 18.5-33 / 18.5-35. Chol/HDL: ≤5.5 / ≤5.5 / ≤6.0. Total Chol ≤300. Family: No parent/sibling death <50 from heart disease/HTN/cancer/diabetes.
+Tobacco: Any nicotine/tobacco within 12mo = tobacco rates. Occasional cigar/pipe (no cigarettes 5+yr) may qualify for NT rates.
+Marijuana: Preferred rates available for limited recreational use. NT rates available all classes.
+Pacific Healthy Rewards: Holistic credits for prevention, screening, mental, emotional, social, fitness — applied to modified/traditional pathways.
+Ages 76-85: Best class is 3rd best risk class (non-PL Promise).
+
+═══════════════════════════════════════════════
+PRINCIPAL GUIDELINES
+═══════════════════════════════════════════════
+Accelerated UW: Ages 18-60, Face $50K-$1M, no exam/labs (45-55% who qualify). Products: Term, UL, IUL, VUL, SUL, Benefit VUL II. BP <155/92 (18-44) / <160/92 (45-60). Chol <275. No marijuana past 5 years. No bankruptcy past 5 years. No more than 1 DUI/reckless last 10yr. No felony past 10yr. No prior rated/declined from any carrier. US citizen or permanent resident. No travel to hazardous locations.
+AU Disqualifiers: Alcohol/drug treatment, A-Fib, Barrett's, Bipolar, Cancer (non-basal/squamous), COPD, Crohn's, Diabetes, Drug abuse, Epilepsy, Gastric Bypass, Heart Disease, Hepatitis, Hypertension (dx within 6 mos), Kidney Disease, Lupus, Melanoma, MS, Parkinson's, PAD/PVD, RA, Sleep Apnea, Stroke/TIA, UC. Advanced diagnostic testing or biopsies may require APS → traditional UW.
+Build Chart (AU): 4'8":75-162(18-44)/75-167(45+) | 5'8":110-240/110-246 | 5'10":116-254/116-261 | 6'0":123-269/123-276.
+Classes: Super Preferred, Preferred, Super Standard, Standard.
+
+═══════════════════════════════════════════════
+SECURIAN GUIDELINES
+═══════════════════════════════════════════════
+Issued by Minnesota Life Insurance Company (all states except NY) and Securian Life Insurance Company (NY).
+Risk Classes: Preferred Select (nicotine-free 36 mos, cigar ≤12/yr negative cotinine, Chol ≤250/Ratio ≤4.5 may include BP and Chol treatment, no DWI last 9yr9mo, ≤2 moving violations last 4yr9mo, no family CV/CVD/cancer death <60 in parent or sibling) | Preferred (nicotine-free 12 mos, cigar ≤24/yr negative cotinine, Chol <270/Ratio <6.0 age<50 or <300/<6.0 age>50, no DWI last 4yr9mo, ≤2 violations last 2yr9mo, no family CV/CVD death <60) | Non-Tobacco Plus (no DWI last 2yr9mo, Chol ≤300/Ratio ≤7.0).
+Mortality Credits Program: Build stretch (if meets all Preferred Select criteria except build, and build meets Preferred limit → issue Preferred Select). Driving history exceptions slightly relaxed. Specialized cholesterol exceptions.
+Financial UW: Specializes in large death benefit applications, industry leader in average policy size.
+
+═══════════════════════════════════════════════
+TRANSAMERICA GUIDELINES
+═══════════════════════════════════════════════
+Products: Trendsetter Super (term), Trendsetter LB (term), FFIUL II/FFIUL (IUL), FCIUL II/FCIUL.
+Risk Classes: Preferred Plus / Preferred Elite (nicotine-free 5+yr, cigar ≤1/mo neg cotinine, Chol ≤230/Ratio ≤5.0 age≤70/≤5.5 age 71+, BP ≤135/85 age≤70/≤145/85 age 71+, no BP treatment through age 49 (or with treatment ages 50-80), no CV/DM/cancer except skin, no family CV/cancer death <60 in parent or sibling, no DUI 5yr, ≤1 serious MVR violation last 3yr) | Preferred NS (nicotine-free 2+yr, Chol ≤260/Ratio ≤5.5 age≤70, BP ≤145/85 age≤70, ≤1 serious violation 3yr) | Standard Plus NS (nicotine-free 2+yr, Chol ≤300/Ratio ≤6.2, BP ≤148/88 age≤70) | Standard NS (nicotine-free 1+yr) | Preferred Smoker (current tobacco, Chol ≤260/Ratio ≤5.5, BP ≤145/85) | Standard Smoker.
+Substandard: Available through Table H (200%). Rates are 25% extra per table.
+Transamerica orders ALL requirements through home office and approved vendors.
+Application valid 180 days; closes at 45 days if outstanding requirements.
+
+═══════════════════════════════════════════════
+OUTPUT FORMAT — FOLLOW EXACTLY
+═══════════════════════════════════════════════
+
+**1. CASE SUMMARY**
+2–3 sentences. Factual only, no assumptions.
+
+**2. CARRIER MATRIX**
+For each of the 15 carriers, one line:
+[#] [CARRIER NAME]: [ELIGIBLE / LIKELY ELIGIBLE / SUBSTANDARD / KNOCKED OUT / NOT APPLICABLE] — [Risk Class Expected] — [1-sentence key reason]
+
+**3. TOP 3 CARRIER RECOMMENDATIONS**
+(Ranked by best fit. Zero bias. No defaults.)
+For each:
+CARRIER #[1/2/3]: [NAME]
+Why This Carrier Wins: [specific UW advantages tied to this case]
+Risk Class Expected: [exact class]
+Underwriting Advantage: [what makes this carrier the best fit]
+Potential Concerns: [honest risks — never omit these]
+
+**4. STRATEGIC DIRECTION**
+- Application Approach: [Clean app / Informal / Trial / Formal inquiry]
+- Submission Order: [carrier 1, 2, 3 and why]
+- Structuring Notes: [face amount, product, any splits]
+- Cover Letter: [Yes/No — what to address if yes]
+
+**5. COVER LETTER**
+(Only include if: medical conditions present, build outside standard, prior declines, tobacco use, or any substandard factors)
+
+Write a formal cover letter addressed TO the #1 recommended carrier's underwriting department, ON BEHALF of the client. The letter must:
+
+- Open with a date line, then: Dear [Carrier Name] Underwriting Department,
+- State the purpose: you are submitting this application on behalf of [Client First + Last Name] and requesting favorable underwriting consideration
+- Introduce the client: age, occupation or financial profile, coverage amount and product requested
+- Tell their story as a risk: who they are, their lifestyle, stability, family situation, financial responsibility, and why they are seeking this coverage
+- Address any health conditions, build factors, tobacco use, or risk factors DIRECTLY — never hide them, but frame each one with context: how it is managed, how long it has been stable, what medical oversight exists, and why it does not represent the mortality risk it might appear to on paper
+- Highlight the positives: compliant treatment, stable labs, healthy lifestyle, financial strength, longevity in career, insurable interest
+- Make a clear ask: request the underwriter consider [specific risk class] based on the totality of the risk profile
+- Close professionally: Thank you for your consideration. Please do not hesitate to contact me with any questions regarding this submission.
+- Sign off as: Respectfully submitted, [Agent Name]
+
+Tone: Professional, confident, and persuasive — written like an experienced producer who knows this client well and believes in the case. 250–400 words. Full formal letter format with proper paragraph breaks.
+
+**6. CONFIDENCE SCORE**
+[HIGH / MEDIUM / LOW]
+Reason: [1–2 sentences based on match between profile and available carrier guidelines]
+
+CRITICAL RULES — NEVER VIOLATE:
+- Treat all 15 carriers equally. Do not default to SBLI or any single carrier.
+- If Mutual of Omaha is recommended, it MUST be for living benefit/CI needs — clarify this clearly.
+- If Prudential is recommended for <$10M cases, note it applies via standard (not Elite) UW.
+- If Foresters is recommended, check BP/Chol medication status — if on BP/Chol meds, AU is knocked out but traditional may still apply.
+- Always justify with specific criteria from the guidelines above.
+- Be honest about knockouts. If a carrier won't take the case, say so and why.`;
+
+// ─── CASE HISTORY ─────────────────────────────────────────────────────────────
+let hist = [];
+
+// ─── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function swTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-' + id).classList.add('on');
+  if (btn) btn.classList.add('on');
+}
+
+// ─── BUILD PROMPT ─────────────────────────────────────────────────────────────
+function buildPrompt() {
+  const v = id => document.getElementById(id)?.value?.trim() || 'Not provided';
+  return `CLIENT CASE:
+Name: ${v('fn')} ${v('ln')}
+Age: ${v('age')} | Gender: ${v('gender')}
+Height: ${v('height')} | Weight: ${v('weight')} lbs
+Tobacco/Nicotine: ${v('tobacco')}
+Medical Conditions & Medications: ${document.getElementById('conditions').value.trim() || 'None reported'}
+Total Cholesterol: ${v('chol')} | Chol/HDL Ratio: ${v('hdl')}
+Blood Pressure: ${v('bp')} | A1C: ${v('a1c')}
+Family History: ${v('fhx')}
+Driving History: ${v('drv')}
+Annual Income: ${v('income')}
+Coverage Requested: ${v('coverage')}
+Product Type: ${v('product')}
+Prior Declines/Ratings: ${v('declines')}
+Case Notes: ${document.getElementById('notes').value.trim() || 'None'}
+
+Analyze this case against all 15 carriers and provide the full structured output.`;
+}
+
+// ─── ANALYZE ──────────────────────────────────────────────────────────────────
+async function analyze() {
+  const age = document.getElementById('age').value;
+  const cov = document.getElementById('coverage').value;
+  if (!age || !cov) { alert('Please enter at least Age and Coverage Amount.'); return; }
+
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  document.getElementById('results').innerHTML = `
+    <div class="lw">
+      <div class="spin"></div>
+      <div class="ll"><strong>Cross-referencing 15 carriers...</strong>Analyzing build charts, risk classes, AU programs, and underwriting criteria</div>
+    </div>`;
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYS,
+        messages: [{ role: 'user', content: buildPrompt() }]
+      })
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(`API error ${res.status}: ${errData?.error?.message || res.statusText}`);
+    }
+    const data = await res.json();
+    const text = data.content?.map(b => b.text || '').join('\n') || 'No response.';
+    renderResults(text);
+    saveHist(text);
+  } catch (e) {
+    document.getElementById('results').innerHTML = `<div class="rb" style="border-color:var(--red)"><div class="rbt" style="color:var(--red)"><span class="ico">⚠️</span>ERROR</div><div class="rt">${e.message}</div></div>`;
+  }
+  btn.disabled = false;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+const SECS = {
+  'CASE SUMMARY': '📋',
+  'CARRIER MATRIX': '🔬',
+  'TOP 3 CARRIER RECOMMENDATIONS': '🏆',
+  'STRATEGIC DIRECTION': '🎯',
+  'COVER LETTER': '✉️',
+  'CONFIDENCE SCORE': '📊'
+};
+
+function renderResults(text) {
+  const keys = Object.keys(SECS);
+  let html = '', rem = text;
+
+  keys.forEach((key, i) => {
+    const nk = keys[i + 1];
+    const re = new RegExp(`\\*?\\*?\\d?\\.?\\s*${key}\\*?\\*?`, 'i');
+    const idx = rem.search(re);
+    if (idx === -1) return;
+    let end = rem.length;
+    if (nk) { const ni = rem.search(new RegExp(`\\*?\\*?\\d?\\.?\\s*${nk}\\*?\\*?`, 'i')); if (ni > idx) end = ni; }
+    let content = rem.substring(idx, end).replace(re, '').trim();
+
+    if (key === 'CONFIDENCE SCORE') {
+      const isH = /high/i.test(content.substring(0, 60));
+      const isM = /medium/i.test(content.substring(0, 60));
+      const cls = isH ? 'cfh' : isM ? 'cfm' : 'cfl';
+      const lbl = isH ? 'HIGH CONFIDENCE' : isM ? 'MEDIUM CONFIDENCE' : 'LOW CONFIDENCE';
+      const dc = isH ? 'dg' : isM ? 'dy' : 'dr';
+      html += `<div class="rb"><div class="rbt"><span class="ico">${SECS[key]}</span>${key}</div><span class="cfb ${cls}"><span class="dot ${dc}"></span>${lbl}</span><div class="rt" style="margin-top:11px">${esc(content.replace(/^(high|medium|low)[^\n]*/i,'').trim())}</div></div>`;
+      return;
+    }
+
+    const cp = key === 'COVER LETTER' ? `<button class="cbtn" onclick="copyThis(this)">Copy</button>` : '';
+    html += `<div class="rb"><div class="rbt"><span class="ico">${SECS[key]}</span>${key}${cp}</div><div class="rt">${esc(content)}</div></div>`;
+  });
+
+  if (!html) html = `<div class="rb"><div class="rbt"><span class="ico">📋</span>ANALYSIS</div><div class="rt">${esc(text)}</div></div>`;
+  document.getElementById('results').innerHTML = html;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/°\s/g,'• ');
+}
+
+function copyThis(btn) {
+  navigator.clipboard.writeText(btn.closest('.rb').querySelector('.rt').innerText).then(() => {
+    btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────────────────────
+function saveHist(text) {
+  const fn = document.getElementById('fn').value;
+  const ln = document.getElementById('ln').value;
+  const name = `${fn} ${ln}`.trim() || 'Unnamed Client';
+  const age = document.getElementById('age').value;
+  const gender = document.getElementById('gender').value;
+  const cov = document.getElementById('coverage').value;
+  const ts = new Date().toLocaleString();
+  const m = text.match(/CARRIER #1[:\s]+([^\n]+)/i);
+  const top = m ? m[1].replace(/\*\*/g,'').trim().substring(0,40) : 'See analysis';
+  hist.unshift({ name, age, gender, cov, top, ts, text });
+  renderHist();
+}
+
+function renderHist() {
+  const el = document.getElementById('histList');
+  if (!hist.length) { el.innerHTML = `<div class="he"><div style="font-size:48px;margin-bottom:14px">🗂</div><div style="font-size:15px;font-weight:600;margin-bottom:7px">No cases yet</div><div style="font-size:13px">Run your first analysis.</div></div>`; return; }
+  el.innerHTML = hist.map((c,i) => `
+    <div class="hi" onclick="loadHist(${i})">
+      <div class="hav">👤</div>
+      <div class="hm"><strong>${c.name}</strong><span>Age ${c.age} · ${c.gender} · ${c.cov}</span><span style="color:var(--accent);font-size:10px;margin-top:2px">Top: ${c.top}</span></div>
+      <div class="ht">${c.ts}</div>
+    </div>`).join('');
+}
+
+function loadHist(i) {
+  const c = hist[i];
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-analyze').classList.add('on');
+  document.querySelectorAll('.nb')[0].classList.add('on');
+  const parts = c.name.split(' ');
+  document.getElementById('fn').value = parts[0] || '';
+  document.getElementById('ln').value = parts.slice(1).join(' ') || '';
+  renderResults(c.text);
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Init
+window.addEventListener('DOMContentLoaded', () => {});
+</script>
+</body>
+</html>
